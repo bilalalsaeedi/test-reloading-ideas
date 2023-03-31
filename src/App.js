@@ -1,18 +1,22 @@
 import {BrowserRouter as Router, Route, Link, Routes} from 'react-router-dom';
-import {useMemo} from 'react';
+import {InstanceProvider, useInstance} from './InstanceContext';
+import {useEffect} from 'react';
+
+function HelloComponent() {
+    console.log('Rendered HelloComponent component');
+    return <div>Hello</div>;
+}
 
 function AView() {
-    const memoizedComponent = useMemo(() => {
-        console.log('Rendered AView component');
-        return (
-            <div>
-                <h1>A View</h1>
-                {/* Unity WebGL component here */}
-            </div>
-        );
-    }, []);
+    const {helloComponent, setHelloComponent} = useInstance();
 
-    return memoizedComponent;
+    useEffect(() => {
+        if (!helloComponent) {
+            setHelloComponent(<HelloComponent/>);
+        }
+    }, [helloComponent, setHelloComponent]);
+
+    return <>{helloComponent}</>;
 }
 
 function BView() {
@@ -25,26 +29,27 @@ function BView() {
 
 function App() {
     return (
-        <Router>
-            <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/a">A</Link>
-                        </li>
-                        <li>
-                            <Link to="/b">B</Link>
-                        </li>
-                    </ul>
-                </nav>
-                <Routes>
-                    <Route path="/a" element={<AView/>}/>
-                    <Route path="/b" element={<BView/>}/>
-                </Routes>
-            </div>
-        </Router>
+        <InstanceProvider>
+            <Router>
+                <div>
+                    <nav>
+                        <ul>
+                            <li>
+                                <Link to="/a">A</Link>
+                            </li>
+                            <li>
+                                <Link to="/b">B</Link>
+                            </li>
+                        </ul>
+                    </nav>
+                    <Routes>
+                        <Route path="/a" element={<AView/>}/>
+                        <Route path="/b" element={<BView/>}/>
+                    </Routes>
+                </div>
+            </Router>
+        </InstanceProvider>
     );
 }
-
 
 export default App;
