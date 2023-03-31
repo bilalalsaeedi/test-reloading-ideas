@@ -1,6 +1,6 @@
-import {BrowserRouter as Router, Route, Link, Routes} from 'react-router-dom';
-import {InstanceProvider, useInstance} from './InstanceContext';
-import {useEffect} from 'react';
+import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom';
+import KeepAlive from 'react-activation';
+import {useMemo} from 'react';
 
 function HelloComponent() {
     console.log('Rendered HelloComponent component');
@@ -8,47 +8,47 @@ function HelloComponent() {
 }
 
 function AView() {
-    const {helloComponent, setHelloComponent} = useInstance();
-
-    useEffect(() => {
-        if (!helloComponent) {
-            setHelloComponent(<HelloComponent/>);
-        }
-    }, [helloComponent, setHelloComponent]);
-
-    return <>{helloComponent}</>;
+    return useMemo(() => {
+        return (
+            <div>
+                <h1>A View</h1>
+                <HelloComponent/>
+            </div>
+        );
+    }, []);
 }
 
 function BView() {
-    return (
-        <div>
-            <h1>B View</h1>
-        </div>
-    );
+    return useMemo(() => {
+        return (
+            <div>
+                <h1>B View</h1>
+                <HelloComponent/>
+            </div>
+        );
+    }, []);
 }
 
 function App() {
     return (
-        <InstanceProvider>
-            <Router>
-                <div>
-                    <nav>
-                        <ul>
-                            <li>
-                                <Link to="/a">A</Link>
-                            </li>
-                            <li>
-                                <Link to="/b">B</Link>
-                            </li>
-                        </ul>
-                    </nav>
-                    <Routes>
-                        <Route path="/a" element={<AView/>}/>
-                        <Route path="/b" element={<BView/>}/>
-                    </Routes>
-                </div>
-            </Router>
-        </InstanceProvider>
+        <Router>
+            <div>
+                <nav>
+                    <ul>
+                        <li>
+                            <Link to="/a">A</Link>
+                        </li>
+                        <li>
+                            <Link to="/b">B</Link>
+                        </li>
+                    </ul>
+                </nav>
+                <Routes>
+                    <Route path="/a" element={<KeepAlive name="AView"><AView/></KeepAlive>}/>
+                    <Route path="/b" element={<KeepAlive name="BView"><BView/></KeepAlive>}/>
+                </Routes>
+            </div>
+        </Router>
     );
 }
 
