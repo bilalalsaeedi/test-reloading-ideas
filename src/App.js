@@ -3,7 +3,18 @@ import {useMemo} from 'react';
 
 function AView() {
     const memoizedComponent = useMemo(() => {
-        console.log('Rendered AView component');
+        
+         // Logs the component lificycle.
+        console.log("-- rendering the child");
+        useEffect(() => {
+            // The component is mounted only one time.
+            console.log("---- mounting the child");
+            return () => {
+                // The component is never unmounted during reparenting.
+                console.log("------ unmounting the child");
+            };
+        }, []);
+
         return (
             <div>
                 <h1>A View</h1>
