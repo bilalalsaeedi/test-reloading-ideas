@@ -3,7 +3,17 @@ import KeepAlive from 'react-activation';
 import {useMemo} from 'react';
 
 function HelloComponent() {
-    console.log('Rendered HelloComponent component');
+    // Logs the component lificycle.
+    console.log("-- rendering the child");
+    useEffect(() => {
+        // The component is mounted only one time.
+        console.log("---- mounting the child");
+        return () => {
+            // The component is never unmounted during reparenting.
+            console.log("------ unmounting the child");
+        };
+    }, []);
+
     return <div>Hello</div>;
 }
 
